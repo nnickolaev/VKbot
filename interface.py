@@ -10,7 +10,6 @@ class BotInterface:
     def __init__(self, token):
         self.bot = vk_api.VkApi(token=token)
 
-
     def message_send(self, user_id, message, attachment=None):
         self.bot.method('messages.send',
                         {'user_id': user_id,
