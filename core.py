@@ -62,7 +62,7 @@ class VkTools():
             result.append({'owner_id': photo['owner_id'],
                            'id': photo['id']
                            })
-            if num == 2:
+            if num == 2: # Чтобы выбирались три фотографии. Нужно еще допилить, чтобы выбирались 3 самые популярные
                 break
 
         return result
