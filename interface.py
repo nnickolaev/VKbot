@@ -23,12 +23,18 @@ class BotInterface:
         longpoll = VkLongPoll(self.bot)
         for event in longpoll.listen():
             if event.type == VkEventType.MESSAGE_NEW and event.to_me:
-                if event.text.lower() == 'привет':
-                    self.message_send(event.user_id, 'Добрый день')
-                elif event.text.lower() == 'поиск':
+                request = event.text
+                if request.lower() == 'привет':
+                    self.message_send(event.user_id, 'Добрый день!')
+                elif request.lower() == 'поиск':
                     pass
-                elif event.text.lower() == 'далее':
+                elif request.lower() == 'далее':
                     pass
+                elif request.lower() == 'пока':
+                    self.message_send(event.user_id, 'Пока!')
+                # Для проверки:
+                elif request.lower() == 'фото':
+                    self.message_send(event.user_id, 'Отправляю фото', 'photo712335667_457240249')
                 else:
                     self.message_send(event.user_id, 'Неизвестная команда')
 
@@ -38,5 +44,11 @@ class BotInterface:
 
 if __name__ == '__main__':
     bot = BotInterface(community_token)
-    media = f'photo_709972942_457239017'
-    bot.message_send(789657038, 'фото', attachment=media)
+    # Отправить фотографию
+    # media = f'photo694200998_457239019'
+    media = ','.join(['photo3359699_282707429', 'photo3359699_334184265', 'photo3359699_266808377'])
+    bot.message_send(3359699, 'фото', attachment=media)
+
+    # Проверка ответов на сообщения
+    # bot.handler()
+
