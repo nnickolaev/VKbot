@@ -1,9 +1,13 @@
 import vk_api
+import datetime
+
 from vk_api.longpoll import VkLongPoll, VkEventType
 from vk_api.utils import get_random_id
-
+from datetime import date
+from core import VkTools
 from config import access_token, community_token
 
+VkTool = VkTools(community_token)
 
 class BotInterface:
 
@@ -27,7 +31,18 @@ class BotInterface:
                 if request.lower() == 'привет':
                     self.message_send(event.user_id, 'Добрый день!')
                 elif request.lower() == 'поиск':
-                    pass
+                    info = VkTools.get_profile_info(event.user_id)
+                    birthday = info[0]['bdate']
+                    f_birthday = datetime.datetime.strptime(birthday, "%d.%m.%Y")
+                    today = date.today()
+                    age = today.year - f_birthday.year
+                    if age >= 24:
+                        age_from = age - 5
+                    else:
+                        age_from = 18
+                    age_to = age + 5
+
+                    VkTool.user_search(info[0]['city']['id'], age_from, age_to, info[0]['sex'])
                 elif request.lower() == 'далее':
                     pass
                 elif request.lower() == 'пока':

@@ -1,6 +1,11 @@
+import datetime
+
 import vk_api
 from config import access_token
 from vk_api.exceptions import ApiError
+# from database import check_viewed
+#from datetime import datetime
+from datetime import date
 
 
 class VkTools:
@@ -34,16 +39,26 @@ class VkTools:
 
             result = []
 
+            # Проверка на открытость аккаунта
             for profile in profiles_list:
                 if not profile['is_closed']:
                     result.append({'name': profile['first_name'] + ' ' + profile['last_name'],
                                    'id': profile['id']
                                    })
 
-            return result
+            result_checked = []
+
+            # Проверка на наличие в БД
+            for profile in result:
+                if check_viewed(profile['id']):
+                    result_checked.append({'name': profile['first_name'] + ' ' + profile['last_name'],
+                                           'id': profile['id']
+                                           })
+            return result_checked
 
         except ApiError:
             print(ApiError)
+
 
     # profiles_list = profiles_list['items']  # Чтобы фильтровать закрытые профили
     #
@@ -89,6 +104,7 @@ class VkTools:
         #         media_id.append(item[value])
         # media = f'photo{media_id[0]}_{media_id[1]}'
 
+
     def photos_get(self, owner_id):
         photos = self.ext_api.method('photos.get',
                                      {'album_id': 'profile',
@@ -117,6 +133,13 @@ class VkTools:
         #         break
         return result
 
+
+    def get_user_from_search():
+        user_from_search = 0
+
+
+        return user_from_search
+
     # Backup
     # def photos_get(self, user_id):
     #     photos = self.ext_api.method('photos.get',
@@ -140,13 +163,35 @@ class VkTools:
 
 
 if __name__ == '__main__':
-    tools = VkTools(access_token)
+    #tools = VkTools(access_token)
 
-    # info = tools.get_profile_info(789657038)
+    # Проверка получения данных пользователя
+    # info = tools.get_profile_info(3359699)
     # if info:
-    #     print(tools.get_profile_info(789657038))
+    #     print(tools.get_profile_info(3359699))
     # else:
     #     pass
+    # Результат в виде: [{'id': 3359699, 'bdate': '17.12.1989', 'city': {'id': 168, 'title': 'Якутск'},
+    # 'relation': 4, 'sex': 2, 'first_name': 'Николай', 'last_name': 'Николаев',
+    # 'can_access_closed': True, 'is_closed': False}]
+
+    info = [{'id': 3359699, 'bdate': '17.12.1989', 'city': {'id': 168, 'title': 'Якутск'}, 'relation': 4, 'sex': 2, 'first_name': 'Николай', 'last_name': 'Николаев', 'can_access_closed': True, 'is_closed': False}]
+    birthday = info[0]['bdate']
+    f_birthday = datetime.datetime.strptime(birthday, "%d.%m.%Y")
+    today = date.today()
+    age = today.year - f_birthday.year
+    if age >= 24:
+        age_from = age - 5
+    else:
+        age_from = 18
+    # print(birthday)
+    # print(f_birthday)
+    # print(today)
+    # print(age)
+    # print(age_from)
+    print(info[0]['city']['id'])
+    print(info[0]['sex'])
+
 
     # Проверка поиска пользователей
     # profiles = tools.user_search(1, 20, 40, 1)
@@ -156,8 +201,8 @@ if __name__ == '__main__':
     # print(tools.get_profile_info(3359699))
 
     # Проверка получения трех фотографий
-    photos = tools.photos_get(3359699)
-    print(photos)  # вывод [{'owner_id': 709972942, 'id': 457239017}]
+    # photos = tools.photos_get(3359699)
+    # print(photos)  # вывод [{'owner_id': 709972942, 'id': 457239017}]
 
     # Получение медиавложения
     # photos_list = [{'owner_id': 709972942, 'id': 457239017}]
