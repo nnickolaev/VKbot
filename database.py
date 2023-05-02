@@ -44,8 +44,8 @@ def add_viewed(profile_id, worksheet_id):  # Добавление записи �
     return True
 
 
-def check_viewed(profile_id):  # Извлечение записей из БД
-    from_db = session.query(Viewed).filter(Viewed.profile_id == profile_id).all()
-    viewed_user = session.query(Viewed).filter_by(profile_id=profile_id).first()
+def check_viewed(profile_id, worksheet_id):  # Извлечение записей из БД
+    #from_db = session.query(Viewed).filter(Viewed.profile_id == profile_id).all()
+    viewed_user = session.query(Viewed).filter(Viewed.profile_id == profile_id, Viewed.worksheet_id == worksheet_id).first()
     return bool(viewed_user)
 
