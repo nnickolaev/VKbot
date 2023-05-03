@@ -26,7 +26,12 @@ class Viewed(Base):
     worksheet_id = sq.Column(sq.Integer, primary_key=True)  # ID просмотренной анкеты
 
 
+# engine = create_engine(db_url_object, echo = True)  # echo = True - для того, чтобы в консоли отображались логи операций с БД
+# Base.metadata.create_all(engine)
+# Session = sessionmaker(bind=engine)
+
 # Функции для работы с БД
+
 def create_all():  # Создание таблицы
     Base.metadata.create_all(engine)
 
@@ -35,7 +40,6 @@ def add_viewed(profile_id, worksheet_id):  # Добавление записи �
     try:
         to_db = Viewed(profile_id=profile_id, worksheet_id=worksheet_id)
         session.add(to_db)
-        session.commit()
     except (IntegrityError, InvalidRequestError):
         return False
     return True
