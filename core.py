@@ -7,6 +7,8 @@ from vk_api.exceptions import ApiError
 #from datetime import datetime
 from datetime import date
 
+from database import check_viewed  # Для проверки
+
 
 class VkTools:
     def __init__(self, token):
@@ -45,16 +47,17 @@ class VkTools:
                     result.append({'name': profile['first_name'] + ' ' + profile['last_name'],
                                    'id': profile['id']
                                    })
+            return result
 
-            result_checked = []
+            # result_checked = []
 
             # Проверка на наличие в БД
-            for profile in result:
-                if check_viewed(profile['id']):
-                    result_checked.append({'name': profile['first_name'] + ' ' + profile['last_name'],
-                                           'id': profile['id']
-                                           })
-            return result_checked
+            # for profile in result:
+            #     if check_viewed(profile['id']):
+            #         result_checked.append({'name': profile['first_name'] + ' ' + profile['last_name'],
+            #                                'id': profile['id']
+            #                                })
+            # return result_checked
 
         except ApiError:
             print(ApiError)
@@ -163,7 +166,7 @@ class VkTools:
 
 
 if __name__ == '__main__':
-    #tools = VkTools(access_token)
+    # tools = VkTools(access_token)
 
     # Проверка получения данных пользователя
     # info = tools.get_profile_info(3359699)
@@ -175,26 +178,47 @@ if __name__ == '__main__':
     # 'relation': 4, 'sex': 2, 'first_name': 'Николай', 'last_name': 'Николаев',
     # 'can_access_closed': True, 'is_closed': False}]
 
-    info = [{'id': 3359699, 'bdate': '17.12.1989', 'city': {'id': 168, 'title': 'Якутск'}, 'relation': 4, 'sex': 2, 'first_name': 'Николай', 'last_name': 'Николаев', 'can_access_closed': True, 'is_closed': False}]
-    birthday = info[0]['bdate']
-    f_birthday = datetime.datetime.strptime(birthday, "%d.%m.%Y")
-    today = date.today()
-    age = today.year - f_birthday.year
-    if age >= 24:
-        age_from = age - 5
-    else:
-        age_from = 18
+    # Расчет age_from и age_to из расчета +-5 лет
+    # info = [{'id': 3359699, 'bdate': '17.12.1989', 'city': {'id': 168, 'title': 'Якутск'}, 'relation': 4, 'sex': 2, 'first_name': 'Николай', 'last_name': 'Николаев', 'can_access_closed': True, 'is_closed': False}]
+    # birthday = info[0]['bdate']
+    # f_birthday = datetime.datetime.strptime(birthday, "%d.%m.%Y")
+    # today = date.today()
+    # age = today.year - f_birthday.year
+    # if age >= 24:
+    #     age_from = age - 5
+    # else:
+    #     age_from = 18
     # print(birthday)
     # print(f_birthday)
     # print(today)
     # print(age)
     # print(age_from)
-    print(info[0]['city']['id'])
-    print(info[0]['sex'])
+    # print(info[0]['city']['id'])
+    # print(info[0]['sex'])
 
 
     # Проверка поиска пользователей
     # profiles = tools.user_search(1, 20, 40, 1)
+    # print(profiles)
+    # Результат: [{'name': 'Дарья Краснова', 'id': 41575774}, {'name': 'Екатерина Лачкова', 'id': 694200998},
+    # {'name': 'Марк Цукерберг', 'id': 586676885}, {'name': 'Саргылана Аммосова', 'id': 19176824}, {'name': 'Айсена
+    # Сыроватская-Лукина', 'id': 11675448}, {'name': 'Анна Булеева', 'id': 683840848}, {'name': 'Анна Колесникова',
+    # 'id': 8395091}, {'name': 'Ангелина Козлова', 'id': 621038393}, {'name': 'Татьяна Пинигина', 'id': 25438994},
+    # {'name': 'Татьяна Чекурова', 'id': 11815041}, {'name': 'Svetlana Semenova', 'id': 2263481}, {'name': 'Юлия
+    # Сокольникова', 'id': 1980325}, {'name': 'Наталья Евсеева', 'id': 25601135}, {'name': 'Надежда Козловская',
+    # 'id': 1328708}, {'name': 'Valerka Neobutova', 'id': 135612510}, {'name': 'Лена Буркина', 'id': 133385809},
+    # {'name': 'Ксения Кириковна', 'id': 33822227}, {'name': 'Екатерина Уваровская', 'id': 5344442}, {'name': 'Инга
+    # Ядреева', 'id': 10801559}, {'name': 'Айталина Афанасьева', 'id': 14187099}]
+
+    # Проверка получения id из списка полученного методом .user_search()
+    profiles = [{'name': 'Дарья Краснова', 'id': 321}, {'name': 'Екатерина Лачкова', 'id': 694200998}, {'name': 'Марк Цукерберг', 'id': 586676885}, {'name': 'Саргылана Аммосова', 'id': 19176824}, {'name': 'Айсена Сыроватская-Лукина', 'id': 11675448}, {'name': 'Анна Булеева', 'id': 683840848}, {'name': 'Анна Колесникова', 'id': 8395091}, {'name': 'Ангелина Козлова', 'id': 621038393}, {'name': 'Татьяна Пинигина', 'id': 25438994}, {'name': 'Татьяна Чекурова', 'id': 11815041}, {'name': 'Svetlana Semenova', 'id': 2263481}, {'name': 'Юлия Сокольникова', 'id': 1980325}, {'name': 'Наталья Евсеева', 'id': 25601135}, {'name': 'Надежда Козловская', 'id': 1328708}, {'name': 'Valerka Neobutova', 'id': 135612510}, {'name': 'Лена Буркина', 'id': 133385809}, {'name': 'Ксения Кириковна', 'id': 33822227}, {'name': 'Екатерина Уваровская', 'id': 5344442}, {'name': 'Инга Ядреева', 'id': 10801559}, {'name': 'Айталина Афанасьева', 'id': 14187099}]
+    # print(profiles[0]['id'])
+    # profiles.pop(0)
+    for profile in profiles:
+        if check_viewed(123, profile['id']) is True:
+            # profiles.remove(profile)
+            profiles.pop(0)
+            print(profiles)
     # print(profiles)
 
     # Проверка получения данных о профиле

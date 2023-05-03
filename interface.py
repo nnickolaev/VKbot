@@ -6,6 +6,7 @@ from vk_api.utils import get_random_id
 from datetime import date
 from core import VkTools
 from config import access_token, community_token
+from database import check_viewed, add_viewed
 
 VkTool = VkTools(community_token)
 
@@ -42,7 +43,12 @@ class BotInterface:
                         age_from = 18
                     age_to = age + 5
 
-                    VkTool.user_search(info[0]['city']['id'], age_from, age_to, info[0]['sex'])
+                    recieved_profiles = VkTool.user_search(info[0]['city']['id'], age_from, age_to, info[0]['sex'])
+                    for recieved_profile in recieved_profiles:
+                        if not check_viewed(event.user_id, recieved_profile['id']):
+                            add_viewed(event.user_id, recieved_profile['id'])
+                        else
+
                 elif request.lower() == 'далее':
                     pass
                 elif request.lower() == 'пока':
