@@ -6,7 +6,7 @@ from vk_api.utils import get_random_id
 from datetime import date
 from core import VkTools
 from config import access_token, community_token
-from database import check_viewed, add_viewed
+from database import check_viewed, add_viewed, create_all
 
 VkTool = VkTools(community_token)
 
@@ -25,14 +25,17 @@ class BotInterface:
                         )
 
     def handler(self):
+        create_all()
         longpoll = VkLongPoll(self.bot)
+        viewed_list = []
         for event in longpoll.listen():
             if event.type == VkEventType.MESSAGE_NEW and event.to_me:
                 request = event.text
                 if request.lower() == 'привет':
-                    self.message_send(event.user_id, 'Добрый день! Для начала работы напишите слово "поиск", для просмотра следующей анкеты, напишите слово "далее"')
-                elif request.lower() in ['поиск', 'далее']:
+                    self.message_send(event.user_id, 'Добрый день! Для начала работы напишите слово "Поиск", для просмотра следующей анкеты, напишите слово "Далее"')
+                elif request.lower() =='поиск':
                     info = VkTools.get_profile_info(event.user_id)
+
                     birthday = info[0]['bdate']
                     f_birthday = datetime.datetime.strptime(birthday, "%d.%m.%Y")
                     today = date.today()
@@ -47,7 +50,10 @@ class BotInterface:
                     for recieved_profile in recieved_profiles:
                         if not check_viewed(event.user_id, recieved_profile['id']):
                             add_viewed(event.user_id, recieved_profile['id'])
-                        else
+
+
+                        else:
+                            continue
 
                 elif request.lower() == 'далее':
                     pass

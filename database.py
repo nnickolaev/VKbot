@@ -36,7 +36,7 @@ def create_all():  # Создание таблицы
     Base.metadata.create_all(engine)
 
 
-def wipe_all():
+def wipe_all():  # Ликвидация таблицы
     Base.metadata.drop_all(engine)
 
 
@@ -57,12 +57,18 @@ def query_viewed(profile_id):
 
 
 def check_viewed(profile_id, worksheet_id):  # Проверка просмотрена ли анкета
-    check_exists = session.query(exists().where(Viewed.profile_id == profile_id, Viewed.worksheet_id == worksheet_id)).scalar()
-    print(check_exists)
+    from_db = session.query(Viewed).filter(Viewed.profile_id == profile_id).all()
+    worksheets_list = [worksheet.worksheet_id for worksheet in from_db]
+    if worksheet_id in worksheets_list:
+        print('true')
+        return True
+    else:
+        print('false')
+        return False
 
 
 if __name__ == '__main__':
-    # create_all()
+    create_all()
 
     # Проверка создания записи просмотренной анкеты
     # add_viewed(111, 222)
@@ -74,21 +80,22 @@ if __name__ == '__main__':
     # q = query_viewed(123)
     # q
 
-    rows = session.query(Viewed).filter(Viewed.profile_id == '123').all()
-
-    print(rows)
-    for obj in rows:
-        print(f'{obj.profile_id=}')
-
-    if 123 in rows:
-        print('tr')
-    else:
-        print('fl')
-
-
     # Проверка на наличие и занесение в БД
     # users_record = session.query(Viewed).filter_by(profile_id='123').scalar()
     # if not users_record:
     #     users_record = User_search_data(id=item['id'])
     # session.add(users_record)
     # session.commit()
+
+    # Тестирую код для проверки просмотра анкеты
+    # worksheet_id = 321
+    # rows = session.query(Viewed).filter(Viewed.profile_id == '123').all()
+    # values = [row.worksheet_id for row in rows]
+    # print(values)
+    # if worksheet_id in values:
+    #     print('true')
+    # else:
+    #     print('false')
+
+    # Проверка функции проверка просмотра анкеты
+    # check_viewed(123, 321)
