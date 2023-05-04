@@ -30,8 +30,8 @@ class BotInterface:
             if event.type == VkEventType.MESSAGE_NEW and event.to_me:
                 request = event.text
                 if request.lower() == 'привет':
-                    self.message_send(event.user_id, 'Добрый день! Для начала работы напишите слово "поиск"')
-                elif request.lower() == 'поиск':
+                    self.message_send(event.user_id, 'Добрый день! Для начала работы напишите слово "поиск", для просмотра следующей анкеты, напишите слово "далее"')
+                elif request.lower() in ['поиск', 'далее']:
                     info = VkTools.get_profile_info(event.user_id)
                     birthday = info[0]['bdate']
                     f_birthday = datetime.datetime.strptime(birthday, "%d.%m.%Y")

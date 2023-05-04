@@ -36,10 +36,15 @@ def create_all():  # Создание таблицы
     Base.metadata.create_all(engine)
 
 
+def wipe_all():
+    Base.metadata.drop_all(engine)
+
+
 def add_viewed(profile_id, worksheet_id):  # Добавление записи в БД
     try:
         to_db = Viewed(profile_id=profile_id, worksheet_id=worksheet_id)
         session.add(to_db)
+        session.commit()
     except (IntegrityError, InvalidRequestError):
         return False
     return True
@@ -60,15 +65,30 @@ if __name__ == '__main__':
     # create_all()
 
     # Проверка создания записи просмотренной анкеты
-    # add_viewed(123, 321)
+    # add_viewed(111, 222)
 
     # Проверка просмотрена ли анкета
     # check_viewed(123, 321)
 
-    # Проверка вытаскивания просмотренных в список
+    # # Проверка вытаскивания просмотренных в список
     # q = query_viewed(123)
     # q
 
-    # all = sq.select([Viewed])
-    # all_result = connection.execute(all)
-    # print(all_result.fetchall())
+    rows = session.query(Viewed).filter(Viewed.profile_id == '123').all()
+
+    print(rows)
+    for obj in rows:
+        print(f'{obj.profile_id=}')
+
+    if 123 in rows:
+        print('tr')
+    else:
+        print('fl')
+
+
+    # Проверка на наличие и занесение в БД
+    # users_record = session.query(Viewed).filter_by(profile_id='123').scalar()
+    # if not users_record:
+    #     users_record = User_search_data(id=item['id'])
+    # session.add(users_record)
+    # session.commit()
