@@ -50,11 +50,12 @@ class BotInterface:
                     for recieved_profile in recieved_profiles:
                         if not check_viewed(event.user_id, recieved_profile['id']):
                             add_viewed(event.user_id, recieved_profile['id'])
+                            photos = VkTools.photos_get(event.user_id)
 
+                        self.message_send(event.user_id, f"Найден пользователь: {recieved_profile['first_name']} {recieved_profile['last_name']} {photos}")
 
                         else:
                             continue
-
                 elif request.lower() == 'далее':
                     pass
                 elif request.lower() == 'пока':
