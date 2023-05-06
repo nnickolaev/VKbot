@@ -18,8 +18,8 @@ from interface import BotInterface
 from config import community_token
 
 if __name__ == '__main__':
-    try:
-        bot = BotInterface(community_token)
-        bot.handler()
-    except KeyError:
-        print(KeyError)
+    # try:
+    #     bot = BotInterface(community_token)
+    #     bot.handler()
+    # except KeyError:
+    #     print(KeyError)

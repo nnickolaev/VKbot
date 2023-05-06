@@ -34,6 +34,7 @@ class Viewed(Base):
 
 def create_all():  # Создание таблицы
     Base.metadata.create_all(engine)
+    print('Создание таблиц')
 
 
 def wipe_all():  # Ликвидация таблицы
@@ -47,6 +48,7 @@ def add_viewed(profile_id, worksheet_id):  # Добавление записи �
         session.commit()
     except (IntegrityError, InvalidRequestError):
         return False
+    print('Профиль добавлен в Базу данных')
     return True
 
 
@@ -60,10 +62,10 @@ def check_viewed(profile_id, worksheet_id):  # Проверка просмотр
     from_db = session.query(Viewed).filter(Viewed.profile_id == profile_id).all()
     worksheets_list = [worksheet.worksheet_id for worksheet in from_db]
     if worksheet_id in worksheets_list:
-        print('true')
+        print('Пользователь уже в Базе данных')
         return True
     else:
-        print('false')
+        print('Это новый для пользователя профиль')
         return False
 
 

@@ -33,7 +33,7 @@ class VkTools:
                                             'age_from': age_from,
                                             'age_to': age_to,
                                             'sex': sex,
-                                            'count': 30,
+                                            'count': 3,
                                             'offset': offset
                                             })
 
@@ -45,7 +45,8 @@ class VkTools:
             for profile in profiles_list:
                 if not profile['is_closed']:
                     result.append({'name': profile['first_name'] + ' ' + profile['last_name'],
-                                   'id': profile['id']
+                                   'id': profile['id'],
+                                   'link': 'vk.com/id'+str(profile['id'])
                                    })
             return result
 
@@ -166,7 +167,7 @@ class VkTools:
 
 
 if __name__ == '__main__':
-    # tools = VkTools(access_token)
+    tools = VkTools(access_token)
 
     # Проверка получения данных пользователя
     # info = tools.get_profile_info(3359699)
@@ -210,15 +211,25 @@ if __name__ == '__main__':
     # {'name': 'Ксения Кириковна', 'id': 33822227}, {'name': 'Екатерина Уваровская', 'id': 5344442}, {'name': 'Инга
     # Ядреева', 'id': 10801559}, {'name': 'Айталина Афанасьева', 'id': 14187099}]
 
+    # Проверка получения профилей
+    # city = 168  # Якутск
+    # age_from = 29
+    # age_to = 39
+    # sex = 1
+    #
+    # user_search = tools.user_search(city, age_from, age_to, sex)
+    # print(user_search)
+
+
     # Проверка получения id из списка полученного методом .user_search()
-    profiles = [{'name': 'Дарья Краснова', 'id': 321}, {'name': 'Екатерина Лачкова', 'id': 694200998}, {'name': 'Марк Цукерберг', 'id': 586676885}, {'name': 'Саргылана Аммосова', 'id': 19176824}, {'name': 'Айсена Сыроватская-Лукина', 'id': 11675448}, {'name': 'Анна Булеева', 'id': 683840848}, {'name': 'Анна Колесникова', 'id': 8395091}, {'name': 'Ангелина Козлова', 'id': 621038393}, {'name': 'Татьяна Пинигина', 'id': 25438994}, {'name': 'Татьяна Чекурова', 'id': 11815041}, {'name': 'Svetlana Semenova', 'id': 2263481}, {'name': 'Юлия Сокольникова', 'id': 1980325}, {'name': 'Наталья Евсеева', 'id': 25601135}, {'name': 'Надежда Козловская', 'id': 1328708}, {'name': 'Valerka Neobutova', 'id': 135612510}, {'name': 'Лена Буркина', 'id': 133385809}, {'name': 'Ксения Кириковна', 'id': 33822227}, {'name': 'Екатерина Уваровская', 'id': 5344442}, {'name': 'Инга Ядреева', 'id': 10801559}, {'name': 'Айталина Афанасьева', 'id': 14187099}]
+    # profiles = [{'name': 'Дарья Краснова', 'id': 321}, {'name': 'Екатерина Лачкова', 'id': 694200998}, {'name': 'Марк Цукерберг', 'id': 586676885}, {'name': 'Саргылана Аммосова', 'id': 19176824}, {'name': 'Айсена Сыроватская-Лукина', 'id': 11675448}, {'name': 'Анна Булеева', 'id': 683840848}, {'name': 'Анна Колесникова', 'id': 8395091}, {'name': 'Ангелина Козлова', 'id': 621038393}, {'name': 'Татьяна Пинигина', 'id': 25438994}, {'name': 'Татьяна Чекурова', 'id': 11815041}, {'name': 'Svetlana Semenova', 'id': 2263481}, {'name': 'Юлия Сокольникова', 'id': 1980325}, {'name': 'Наталья Евсеева', 'id': 25601135}, {'name': 'Надежда Козловская', 'id': 1328708}, {'name': 'Valerka Neobutova', 'id': 135612510}, {'name': 'Лена Буркина', 'id': 133385809}, {'name': 'Ксения Кириковна', 'id': 33822227}, {'name': 'Екатерина Уваровская', 'id': 5344442}, {'name': 'Инга Ядреева', 'id': 10801559}, {'name': 'Айталина Афанасьева', 'id': 14187099}]
     # print(profiles[0]['id'])
     # profiles.pop(0)
-    for profile in profiles:
-        if check_viewed(123, profile['id']) is True:
-            # profiles.remove(profile)
-            profiles.pop(0)
-            print(profiles)
+    # for profile in profiles:
+    #     if check_viewed(123, profile['id']) is True:
+    #         # profiles.remove(profile)
+    #         profiles.pop(0)
+    #         print(profiles)
     # print(profiles)
 
     # Проверка получения данных о профиле
