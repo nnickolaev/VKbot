@@ -63,6 +63,11 @@ class VkTools:
         except ApiError:
             print(ApiError)
 
+    def user_search_offset(self, city_id, age_from, age_to, sex):
+        offset = 0
+        offset += 30
+        recieved_profiles = self.user_search(city_id, age_from, age_to, sex, offset)
+        return recieved_profiles
 
     # profiles_list = profiles_list['items']  # Чтобы фильтровать закрытые профили
     #

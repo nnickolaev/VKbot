@@ -56,51 +56,26 @@ class BotInterface:
                         sex = 2
                     else:
                         sex = 1
-                    # print(info[0]['city']['id'], age_from, age_to, sex)
                     global recieved_profiles
                     recieved_profiles = VkTool.user_search(info[0]['city']['id'], age_from, age_to, sex)
-                    # print(recieved_profiles)
-
-                    # Изначальный код
-                    # for recieved_profile in recieved_profiles:
-                        # if not check_viewed(event.user_id, recieved_profile['id']):
-                        #     add_viewed(event.user_id, recieved_profile['id'])
-                        #     photos = VkTool.photos_get(recieved_profile['id'])
-                        #
-                        #     self.message_send(event.user_id, f"Найден пользователь: {recieved_profile['name']}", photos)
-                        # else:
-                        #     continue
-
-                    # Пробую видоизменить логику, попытка 100
-                    # if recieved_profiles:
-                    #     answer = False
-                    #     while not answer:
-                    #         current_profile = recieved_profiles.pop(0)
-                    #         if not check_viewed(event.user_id, current_profile['id']):
-                    #             photos = VkTool.photos_get(current_profile['id'])
-                    #             self.message_send(event.user_id, f"Найден пользователь: {current_profile['name']}", photos)
-                    #             answer = True
-                    #             break
-                    #     if not recieved_profiles:
-                    #
-                    # else:
-                    #     recieved_profiles = VkTool.user_search(info[0]['city']['id'], age_from, age_to, sex, 30)
-                    # continue
-
-                    # С очередной логикой все плохо, поэтому пробую новую
-                    if len(recieved_profiles) == 0:
-                        offset += 30
-                        recieved_profiles = VkTool.user_search(info[0]['city']['id'], age_from, age_to, sex, offset)
-                    else:
-                        current_profile = recieved_profiles.pop(0)
-                        while check_viewed(event.user_id, current_profile['id']):
+                    current_profile = recieved_profiles.pop(0)
+                    while check_viewed(event.user_id, current_profile['id']):
+                        if len(recieved_profiles) == 0:
+                            offset += 3
+                            recieved_profiles = VkTool.user_search(info[0]['city']['id'], age_from, age_to, sex,
+                                                                   offset)
+                        if len(recieved_profiles) > 0:
                             current_profile = recieved_profiles.pop(0)
-                        add_viewed(event.user_id, current_profile['id'])
-                        photos = VkTool.photos_get(current_profile['id'])
-                        message = f"""Найден пользователь: {current_profile['name']} 
-                            Ссылка на страницу: {current_profile['link']} 
-                            Отправьте "Далее", чтобы получить следующий профиль"""
-                        self.message_send(event.user_id, message, photos)
+                    # Пробую заменить кусок кода на функцию
+                    # if len(recieved_profiles) == 0:
+                    #     offset += 30
+                    #     recieved_profiles = VkTool.user_search(info[0]['city']['id'], age_from, age_to, sex, offset)
+                    add_viewed(event.user_id, current_profile['id'])
+                    photos = VkTool.photos_get(current_profile['id'])
+                    message = f"""Найден пользователь: {current_profile['name']} 
+                        Ссылка на страницу: {current_profile['link']} 
+                        Отправьте "Далее", чтобы получить следующий профиль"""
+                    self.message_send(event.user_id, message, photos)
                 elif request.lower() == 'далее':
                     if len(recieved_profiles) == 0:
                         offset += 30
@@ -119,10 +94,10 @@ class BotInterface:
                     self.message_send(event.user_id, 'Пока!')
                 # Для проверки:
                 elif request.lower() == 'помощь':
-                    self.message_send(event.user_id, '''Список команд:
+                    self.message_send(event.user_id, """Список команд:
                     Поиск - начать поиск подходящих профилей
                     Далее - получить следующий профиль
-                    Помощь - получить список команд''')
+                    Помощь - получить список команд""")
                 else:
                     self.message_send(event.user_id, 'Неизвестная команда. Напишите "Помощь", чтобы посмотреть список команд')
 
