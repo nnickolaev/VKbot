@@ -1,3 +1,5 @@
+"""Модуль работы с Базой данных
+"""
 import sqlalchemy as sq
 from sqlalchemy import create_engine, MetaData, exists, Boolean
 from sqlalchemy.orm import sessionmaker, declarative_base
@@ -24,15 +26,14 @@ class Viewed(Base):
     worksheet_id = sq.Column(sq.Integer, primary_key=True)  # ID просмотренной анкеты
 
 # Функции для работы с БД
-def create_all():  # Создание таблиц, в моем случае одной
+def create_all():  # Создание таблицы
     Base.metadata.create_all(engine)  # Используется метод create_all()
     print('Создание таблицы')
 
-
-def wipe_all():  # Ликвидация таблицы
+def wipe_all():  # Очистка таблицы
     Base.metadata.drop_all(engine)  # Используется метод drop_all()
-    print('Таблица ликвидирована')
-
+    create_all()
+    print('Таблица очищена')
 
 def add_viewed(profile_id, worksheet_id):  # Добавление записи в БД
     try:
@@ -43,7 +44,6 @@ def add_viewed(profile_id, worksheet_id):  # Добавление записи �
         return False
     print('Профиль добавлен в Базу данных')
     return True
-
 
 def check_viewed(profile_id, worksheet_id):  # Проверка просмотрена ли анкета
     from_db = session.query(Viewed).filter(Viewed.profile_id == profile_id).all()
@@ -65,7 +65,7 @@ if __name__ == '__main__':
     # Проверка просмотрена ли анкета
     # check_viewed(123, 321)
 
-    # # Проверка вытаскивания просмотренных в список
+    # Проверка вытаскивания просмотренных в список
     # q = query_viewed(123)
     # q
 
