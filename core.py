@@ -1,6 +1,8 @@
+"""Модуль работы с бэкэндом VK
+"""
 import vk_api
-from config import access_token
 from vk_api.exceptions import ApiError
+from config import access_token
 
 
 # Класс для работы с backend VK
@@ -26,7 +28,7 @@ class VkTools:
                                             'age_from': age_from,
                                             'age_to': age_to,
                                             'sex': sex,
-                                            'count': 3,
+                                            'count': 30,  # Будет получено 30 пользователей
                                             'offset': offset
                                             })
 
@@ -71,7 +73,7 @@ class VkTools:
 
 if __name__ == '__main__':
 
-    # tools = VkTools(access_token)
+    tools = VkTools(access_token)
 
     # Проверка получения данных пользователя
     # info = tools.get_profile_info(3359699)
