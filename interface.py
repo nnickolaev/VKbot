@@ -16,6 +16,9 @@ class BotInterface:  # Класс для работы с фронтэндом VK
 
     def __init__(self, token):
         self.bot = vk_api.VkApi(token=token)
+        self.bot_api = self.bot.get_api()
+        self.longpoll = VkLongPoll(self.bot)  # Дописал чтобы использовать лонгпол в другой функции
+
 
     def message_send(self, user_id, message, attachment=None):  # Функция для отправки сообщений
         self.bot.method('messages.send',
@@ -26,10 +29,65 @@ class BotInterface:  # Класс для работы с фронтэндом VK
                          }
                         )
 
+    # Пробую код для ввода возраста, если у пользователя отсутствует год рождения
+    def ask_age(self, user_id):
+        try:
+            print('Полная дата рождения пользователя скрыта')
+            self.message_send(user_id, 'Прошу ввести минимальный и максимальный возраст для поиска в формате: 18-50')
+            for event in self.longpoll.listen():
+                if event.type == VkEventType.MESSAGE_NEW and event.to_me:
+                    global age_combination
+                    age_combination = event.text
+                    return self.format_age(user_id, age_combination)
+        except KeyError:
+            print('Возраст введен с ошибкой')
+            self.message_send(user_id,
+                              'Возраст введен с ошибкой. Прошу ввести минимальный и максимальный возраст для поиска в формате: 18-50')
+            for event in self.longpoll.listen():
+                if event.type == VkEventType.MESSAGE_NEW and event.to_me:
+                    age_combination = event.text
+                    return self.format_age(user_id, age_combination)
+
+    def format_age(self, user_id, age):
+        global age_from, age_to
+        ages = age.split('-')
+        try:
+            age_from = int(ages[0])
+            age_to = int(ages[1])
+            print(f'Возраст для поиска от {age_from} до {age_to}')
+            return
+        except ValueError:
+            print('Возраст введен с ошибкой')
+            return
+
+    def ask_sex(self, user_id):
+        try:
+            print('Пол пользователя скрыт')
+            self.message_send(user_id, 'Необходимо выбрать пол партнера для поиска, напишите М для поиска мужчины, либо Ж для поиска женщины')
+            for event in self.longpoll.listen():
+                if event.type == VkEventType.MESSAGE_NEW and event.to_me:
+                    if event.text.lower() == 'м':
+                        return 2
+                    elif event.text.lower() == 'ж':
+                        return 1
+        except KeyError:
+            print('Пол введен с ошибкой')
+            self.message_send(user_id,
+                              'Пол введен с ошибкой. Прошу написать М для поиска мужчины, либо Ж для поиска женщины')
+            for event in self.longpoll.listen():
+                if event.type == VkEventType.MESSAGE_NEW and event.to_me:
+                    if event.text.lower() == 'м':
+                        return 2
+                    elif event.text.lower() == 'ж':
+                        return 1
+
+    def get_city(self, user_id):
+        pass
+
     def handler(self):  # Функция для прослушивания, обработки и реагирования на входящие команды
         create_all()
-        longpoll = VkLongPoll(self.bot)  # Для подключения к Long Poll серверу VK
-        for event in longpoll.listen():  # Прослушивание событий
+        # longpoll = VkLongPoll(self.bot)  # Для подключения к Long Poll серверу VK
+        for event in self.longpoll.listen():  # Прослушивание событий
             if event.type == VkEventType.MESSAGE_NEW and event.to_me:  # Условие для работы с новыми сообщениями, приходящими боту
                 request = event.text
                 # Приветствие
@@ -41,19 +99,38 @@ class BotInterface:  # Класс для работы с фронтэндом VK
                     global info  # Делаю переменную глобальной, т.к. будет использоваться в других блоках
                     info = VkTool.get_profile_info(event.user_id)  # Получение информации о пользователе функцией из класса для работы с бэкэндом
                     birthday = info[0]['bdate']  # Для расчета возраста в анкетах беру возраст пользователя
-                    # Далее расчет данных для поиска: возраст от, возраст до, пол
                     f_birthday = datetime.datetime.strptime(birthday, "%d.%m.%Y")  # Привожу дату рождения к формату
-                    today = date.today()  # Получаю текущую дату для дальнейшего вычисления возраста пользователя
-                    age = today.year - f_birthday.year  # Вычисление возраста пользователя
-                    if age >= 24:  # Это условие введено, чтобы не отображались несовершеннолетние профили
-                        global age_from  # Аналогично списку info, делаю переменную глобальной для дальнейшего использования в других блоках
-                        age_from = age - 5  # Возраст "от". Оптимальная разница в возрасте для пар +- 5 лет
-                    else:
-                        age_from = 18
+                    # Пробный код для получения возраста поиска от пользователя
+                    print(f_birthday.year)
+                    global age_from
                     global age_to
-                    age_to = age + 5  # Возраст "до"
+                    if not f_birthday.year:
+                        self.ask_age(event.user_id)
+                    else:
+                        today = date.today()  # Получаю текущую дату для дальнейшего вычисления возраста пользователя
+                        age = today.year - f_birthday.year  # Вычисление возраста пользователя
+                        if age >= 24:  # Это условие введено, чтобы не отображались несовершеннолетние профили
+                            age_from = age - 5  # Возраст "от". Оптимальная разница в возрасте для пар +- 5 лет
+                        else:
+                            age_from = 18
+                        age_to = age + 5  # Возраст "до"
+
+                    # Далее расчет данных для поиска: возраст от, возраст до, пол
+                    # Backup
+                    # f_birthday = datetime.datetime.strptime(birthday, "%d.%m.%Y")  # Привожу дату рождения к формату
+                    # today = date.today()  # Получаю текущую дату для дальнейшего вычисления возраста пользователя
+                    # age = today.year - f_birthday.year  # Вычисление возраста пользователя
+                    # if age >= 24:  # Это условие введено, чтобы не отображались несовершеннолетние профили
+                    #     global age_from  # Аналогично списку info, делаю переменную глобальной для дальнейшего использования в других блоках
+                    #     age_from = age - 5  # Возраст "от". Оптимальная разница в возрасте для пар +- 5 лет
+                    # else:
+                    #     age_from = 18
+                    # global age_to
+                    # age_to = age + 5  # Возраст "до"
                     global sex
-                    if info[0]['sex'] == 1: # Автоматическая инверсия пола для подбора традиционного партнера
+                    if not info[0]['sex']:
+                        sex = self.ask_sex(event.user_id)
+                    elif info[0]['sex'] == 1: # Автоматическая инверсия пола для подбора традиционного партнера
                         sex = 2  # Женщинам ищется мужчина
                     else:
                         sex = 1  # Мужчинам ищется женщина
@@ -105,14 +182,14 @@ class BotInterface:  # Класс для работы с фронтэндом VK
 
 
 if __name__ == '__main__':
-    bot = BotInterface(community_token)
+    bot1 = BotInterface(community_token)
     # Отправить фотографию
     # media = f'photo694200998_457239019'
     # media = ','.join(['photo3359699_282707429', 'photo3359699_334184265', 'photo3359699_266808377'])
     # bot.message_send(3359699, 'фото', attachment=media)
 
     # Проверка ответов на сообщения
-    bot.handler()
+    bot1.handler()
 
     # Проверка получения данных пользователя
     # user = VkTool.get_profile_info(3359699)
