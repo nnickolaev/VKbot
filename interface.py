@@ -19,7 +19,6 @@ class BotInterface:  # Класс для работы с фронтэндом VK
         self.bot_api = self.bot.get_api()
         self.longpoll = VkLongPoll(self.bot)  # Дописал чтобы использовать лонгпол в другой функции
 
-
     def message_send(self, user_id, message, attachment=None):  # Функция для отправки сообщений
         self.bot.method('messages.send',
                         {'user_id': user_id,
@@ -81,7 +80,7 @@ class BotInterface:  # Класс для работы с фронтэндом VK
                     elif event.text.lower() == 'ж':
                         return 1
 
-    def get_city(self, user_id):
+    def ask_city(self, user_id):
         pass
 
     def handler(self):  # Функция для прослушивания, обработки и реагирования на входящие команды
