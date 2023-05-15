@@ -6,7 +6,7 @@ from vk_api.longpoll import VkLongPoll, VkEventType
 from vk_api.utils import get_random_id
 from datetime import date
 from core import VkTools
-from config import access_token, community_token, access_token
+from configg import access_token, community_token, access_token
 from database import check_viewed, add_viewed, create_all, wipe_all
 
 
@@ -81,7 +81,23 @@ class BotInterface:  # Класс для работы с фронтэндом VK
                         return 1
 
     def ask_city(self, user_id):
-        pass
+        try:
+            print('Город пользователя скрыт')
+            self.message_send(user_id, 'Прошу ввести город для поиска')
+            for event in self.longpoll.listen():
+                if event.type == VkEventType.MESSAGE_NEW and event.to_me:
+                    city_name = event.text
+                    city_id = self.bot_api.database.getCities(country_id=1, q=city_name)["items"][0]["id"]
+                    return city_id
+        except KeyError:
+            print('Город введен с ошибкой')
+            self.message_send(user_id,
+                              'Город введен с ошибкой. Прошу ввести ввести город для поиска, например: Якутск')
+            for event in self.longpoll.listen():
+                if event.type == VkEventType.MESSAGE_NEW and event.to_me:
+                    city_name = event.text
+                    city_id = self.bot_api.database.getCities(country_id=1, q=city_name)["items"][0]["id"]
+                    return city_id
 
     def handler(self):  # Функция для прослушивания, обработки и реагирования на входящие команды
         create_all()
@@ -133,8 +149,14 @@ class BotInterface:  # Класс для работы с фронтэндом VK
                         sex = 2  # Женщинам ищется мужчина
                     else:
                         sex = 1  # Мужчинам ищется женщина
+
+                    if 'city' in info:
+                        city_id = info[0]['city']['id']
+                    else:
+                        city_id = self.ask_city(event.user_id)
+
                     global recieved_profiles
-                    recieved_profiles = VkTool.user_search(info[0]['city']['id'], age_from, age_to, sex)  # Получаю список пользователей по заданным параметрам
+                    recieved_profiles = VkTool.user_search(city_id, age_from, age_to, sex)  # Получаю список пользователей по заданным параметрам
                     current_profile = recieved_profiles.pop(0)  # Заношу в переменную первый профиль из списка, попутно удаляя его из него
                     while check_viewed(event.user_id, current_profile['id']):  # Вызываю цикл с проверкой был ли профиль просмотрен. Цикл будет срабатывать пока не найдется не просмотренный профиль
                         if len(recieved_profiles) == 0:  # Проверка не закончился ли список
@@ -188,7 +210,11 @@ if __name__ == '__main__':
     # bot.message_send(3359699, 'фото', attachment=media)
 
     # Проверка ответов на сообщения
-    bot1.handler()
+    # bot1.handler()
+
+    # Проверка поиска id города
+    cityid = bot1.bot_api.database.getCities(country_id=1, q='Владивосток')  # ["items"][0]["id"]
+    print(cityid)
 
     # Проверка получения данных пользователя
     # user = VkTool.get_profile_info(3359699)

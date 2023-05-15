@@ -4,7 +4,7 @@ import sqlalchemy as sq
 from sqlalchemy import create_engine, MetaData, exists, Boolean
 from sqlalchemy.orm import sessionmaker, declarative_base
 from sqlalchemy.exc import IntegrityError, InvalidRequestError
-from config import db_url_object
+from configg import db_url_object
 
 
 # Создание таблиц

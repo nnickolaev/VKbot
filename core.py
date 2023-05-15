@@ -2,7 +2,7 @@
 """
 import vk_api
 from vk_api.exceptions import ApiError
-from config import access_token
+from configg import access_token
 
 
 # Класс для работы с backend VK
@@ -76,7 +76,8 @@ if __name__ == '__main__':
     tools = VkTools(access_token)
 
     # Проверка получения данных пользователя
-    # info = tools.get_profile_info(3359699)
+    info = tools.get_profile_info(3359699)
+    print(info)
     # if info:
     #     print(tools.get_profile_info(3359699))
     # else:
