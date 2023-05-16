@@ -1,7 +1,7 @@
 """Модуль запуска бота VKinder
 """
 from interface import BotInterface
-from configg import access_token, community_token, access_token
+from config import community_token
 
 
 if __name__ == '__main__':
